@@ -10,17 +10,12 @@ licensed: never copy or port its code, only its users' layout data.
 - `API.md` — addon API (`net.ledok.menuld.api`); keep in sync with `MenuLdApi`/`MenuLdAddon`.
 - `CHANGELOG.md` — add an entry under `## Unreleased` for every behavior change.
 
-## Two builds
-- 1.21.1 Fabric + NeoForge: `common/`, `fabric/`, `neoforge/` (this root Gradle build, Java 21).
-- 26.1.2 NeoForge: `versions/26.1.2-neoforge/` — a standalone Gradle build (Java 25, ModDevGradle 2.0.148,
-  NeoForge 26.1.2.114, wrapper copied from `../emi`). Same packages/class names as `common/`: port every
-  change to both. 26.x differences: `GuiGraphicsExtractor` + `extract*` render methods, deferred GUI (no
-  shader color — opacity is the ARGB tint of each blit/fill), `GpuDevice` textures + `SamplerCache`
-  samplers (`MenuImage.ImageTexture`), `Identifier`, `net.minecraft.util.Util`, NativeImage ARGB
-  `setPixel`. Hooks there: skins via `AbstractButton.extractDefaultSprite` HEAD, label color via NeoForge's
-  `getFGColor()` in `extractDefaultLabel`; no SpriteIconButton/NeoForgeLoadingOverlay mixins (icons already
-  fade; NeoForge 26.x uses vanilla `LoadingOverlay`). Reference sources: `../emi/neoforge/build/moddev/
-  artifacts/minecraft-patched-26.1.2.114-sources.jar`.
+## Two branches
+- `1.21.1` (this checkout): Fabric + NeoForge MultiLoader, Java 21.
+- `26.1` (git worktree `../Menu_LD-26.1`, the default branch on GitHub): NeoForge 26.1.2 only, standalone
+  Gradle build at its root (Java 25, ModDevGradle 2.0.148, NeoForge 26.1.2.114). Same packages and class
+  names as `common/`: **port every change to both branches**. That branch's CLAUDE.md lists the 26.x API
+  differences (deferred `GuiGraphicsExtractor`, GPU textures, `Identifier`, fewer hooks).
 
 ## Build & test
 - `./gradlew build`. Check the Fabric jar's mixins are remapped: `strings` on

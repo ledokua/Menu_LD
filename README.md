@@ -6,10 +6,10 @@ hidden, retextured and recolored, extra link and join-server buttons, images, te
 menu music — and gives the resource-loading screen your own colors, logo and progress bar. It is the
 small replacement for FancyMenu (plus Konkrete and Melody) when all you need is the main menu.
 
-> Minecraft **1.21.1** (Java 21 · Fabric with [Fabric API](https://modrinth.com/mod/fabric-api), or
-> NeoForge) and **26.1.2** (Java 25 · NeoForge). **Client-side only** — servers never need it. One config
-> file works on every build. No in-game editor: layouts are a hand-written JSON5 file that reloads when you
-> reopen the title screen.
+> Minecraft **1.21.1** · Java 21 · Fabric (needs [Fabric API](https://modrinth.com/mod/fabric-api)) or
+> NeoForge. **Client-side only** — servers never need it. No in-game editor: layouts are a hand-written
+> JSON5 file that reloads when you reopen the title screen. For Minecraft 26.1.2 (NeoForge) see the
+> [`26.1` branch](https://github.com/ledokua/Menu_LD/tree/26.1); the config file is the same on both.
 
 ## Contents
 
@@ -230,8 +230,7 @@ language. Vanilla keeps its timing and fades; the layout changes what it shows.
 
 Use files from `config/menu_ld/` here: resource-pack images are not readable while the first load runs.
 **NeoForge:** NeoForge shows its own early loading window before the game window exists (mods cannot
-change it). Once the game window takes over, the layout applies — on 1.21.1 by covering NeoForge's own
-overlay, on 26.1.2 directly (NeoForge uses vanilla's overlay there).
+change it); once the game window takes over, the layout covers NeoForge's overlay.
 
 ## Text and languages
 
@@ -311,21 +310,14 @@ Other mods can register button actions and widget ids through the `menu_ld` entr
 
 ## Notes for developers
 
-| Build | Where | Build / run |
-|---|---|---|
-| 1.21.1 Fabric + NeoForge | `common/`, `fabric/`, `neoforge/` (MultiLoader, NPCs_LD template) | `./gradlew build`, `:fabric:runClient`, `:neoforge:runClient` |
-| 26.1.2 NeoForge | `versions/26.1.2-neoforge/` (standalone Gradle build, Java 25) | `cd versions/26.1.2-neoforge && ./gradlew build` / `runClient` |
-
-The 26.1.2 build keeps the same packages and class names as `common/` so changes carry over file by file;
-the differences are the 26.x GUI API (`GuiGraphicsExtractor`, `extract*` methods, pipelines and ARGB tints
-instead of shader color), GPU textures (`GpuDevice` + sampler), `Identifier` for `ResourceLocation`, and
-fewer hooks (button skins via `AbstractButton.extractDefaultSprite`, no icon-fade or NeoForge overlay mixin).
-1.21.1 internals: `common/` holds all code (Mojmap, vanilla only), `fabric/` and `neoforge/` are thin glue. Hooks: `TitleScreenMixin` (panorama, logo, splash, Realms,
-front pass), `AbstractButtonMixin` + `SpriteIconButtonMixin` (skins, label color, icon fade),
-`ScreenMixin` (`all_menus`), `LoadingOverlayMixin` (+ NeoForge-only `NeoForgeLoadingOverlayMixin`),
-`MusicManagerMixin`, `SoundBufferLibraryMixin` (file streaming). Widget rules run after other mods'
-init hooks (Fabric: a late `ScreenEvents.AFTER_INIT` phase; NeoForge: `ScreenEvent.Init.Post` at
-`LOWEST`).
+MultiLoader layout (NPCs_LD template): `common/` holds all code (Mojmap, vanilla only), `fabric/` and
+`neoforge/` are thin glue. Build with `./gradlew build`; dev clients with `./gradlew :fabric:runClient`
+and `./gradlew :neoforge:runClient`. The [`26.1` branch](https://github.com/ledokua/Menu_LD/tree/26.1) has the
+same packages and class names, so changes carry over file by file. Hooks: `TitleScreenMixin` (panorama,
+logo, splash, Realms, front pass), `AbstractButtonMixin` + `SpriteIconButtonMixin` (skins, label color, icon
+fade), `ScreenMixin` (`all_menus`), `LoadingOverlayMixin` (+ NeoForge-only `NeoForgeLoadingOverlayMixin`),
+`MusicManagerMixin`, `SoundBufferLibraryMixin` (file streaming). Widget rules run after other mods' init
+hooks (Fabric: a late `ScreenEvents.AFTER_INIT` phase; NeoForge: `ScreenEvent.Init.Post` at `LOWEST`).
 
 ## License
 

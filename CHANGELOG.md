@@ -4,7 +4,7 @@
 
 ## 0.2.0
 
-- **Minecraft 26.1.2 (NeoForge)** build, in `versions/26.1.2-neoforge/` — same config file and features.
+- **Minecraft 26.1.2 (NeoForge)** build, on the `26.1` branch — same config file and features.
   On 26.x the NeoForge startup screen is vanilla's overlay, so the loading screen layout covers it directly.
 - Effects get `layer` (`background` by default — rain and fireflies now pass behind the logo and other
   images; `behind_buttons`; `front`) instead of `front`, and `hide_under_buttons` (default on): effects
