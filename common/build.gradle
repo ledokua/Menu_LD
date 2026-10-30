@@ -1,0 +1,23 @@
+// Loader-agnostic code: only vanilla Minecraft (Mojmap) may be referenced here. Loader glue lives in
+// ../fabric and ../neoforge. The whole mod is client-side.
+plugins {
+    id 'fabric-loom'
+}
+
+base {
+    archivesName = "${rootProject.archives_base_name}-common"
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    // Also brings MixinExtras (@WrapOperation, @WrapWithCondition), which both loaders bundle at runtime.
+    modCompileOnly "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+}
+
+loom {
+    runs {
+        client { ideConfigGenerated = false }
+        server { ideConfigGenerated = false }
+    }
+}

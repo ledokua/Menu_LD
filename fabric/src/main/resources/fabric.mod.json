@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "menu_ld",
+  "version": "${version}",
+  "name": "Menu_LD",
+  "description": "Lightweight title screen and loading screen customization from one config file: background images and GIFs, restyled and moved buttons, extra link and join-server buttons, menu music.",
+  "authors": [
+    "LeDok"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.ledok.menuld.fabric.MenuLdFabric"
+    ]
+  },
+  "mixins": [
+    "menu_ld.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=21"
+  },
+  "conflicts": {
+    "fancymenu": "*"
+  }
+}

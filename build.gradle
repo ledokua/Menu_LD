@@ -1,0 +1,29 @@
+plugins {
+    id 'fabric-loom' version '1.17-SNAPSHOT' apply false
+    id 'net.neoforged.moddev' version '2.0.144' apply false
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    version = rootProject.mod_version
+    group = rootProject.maven_group
+
+    repositories {
+        mavenCentral()
+    }
+
+    def targetJavaVersion = 21
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = "UTF-8"
+        it.options.release.set(targetJavaVersion)
+    }
+
+    java {
+        // Pinned, not "only when the current JVM is too old": 1.21.1 is a Java 21 game, and launching the
+        // dev client on a newer JVM only earns warnings out of Minecraft's own JNA and Guava.
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+        withSourcesJar()
+    }
+}
