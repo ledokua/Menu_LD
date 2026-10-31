@@ -21,7 +21,7 @@ import java.util.Iterator;
  * being handed over stay in memory (a 426×240, 213-frame GIF: ~10 MB instead of ~87 MB fully decoded).
  * Not thread-safe; {@link MenuImages} drives each decoder from a single worker thread.
  */
-final class GifDecoder implements AutoCloseable {
+final class GifDecoder implements FrameSource {
     private final ImageReader reader;
     private final ImageInputStream stream;
     private final int width;
@@ -77,11 +77,13 @@ final class GifDecoder implements AutoCloseable {
         return height;
     }
 
-    int frameCount() {
+    @Override
+    public int frameCount() {
         return frameCount;
     }
 
-    int delayMs(int frame) {
+    @Override
+    public int delayMs(int frame) {
         return delaysMs[frame];
     }
 
@@ -91,7 +93,8 @@ final class GifDecoder implements AutoCloseable {
     }
 
     /** Composites the next frame (wrapping around) into a new image the caller owns. */
-    NativeImage decodeNext() throws IOException {
+    @Override
+    public NativeImage decodeNext() throws IOException {
         int index = next;
         next = (next + 1) % frameCount;
         if (index == 0) Arrays.fill(canvas, 0);

@@ -93,11 +93,11 @@ public final class MenuAudio {
         FILE_IDS.clear();
     }
 
-    /** A one-off sound on the weather channel (menu thunder), {@code delayTicks} from now. */
+    /** A one-off title screen sound on the weather channel (menu thunder), {@code delayTicks} from now. */
     public static void playOnce(String sound, float volume, int delayTicks) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) return;
-        MenuSound instance = create(new MenuConfig.Audio(sound, SoundSource.WEATHER, volume, false));
+        MenuSound instance = create(new MenuConfig.Audio(sound, SoundSource.WEATHER, volume, false, true));
         if (instance == null) return;
         instance.setDelay(delayTicks);
         mc.getSoundManager().play(instance);

@@ -17,12 +17,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Image cache for layouts. PNGs decode on first use (they are small); GIFs open on the worker thread and
- * draw nothing until their first frame is ready. Render thread only.
+ * Image cache for layouts. PNGs decode on first use (they are small); animations (GIFs, frame archives)
+ * open on the worker thread and draw nothing until their first frame is ready. Render thread only.
  */
 public final class MenuImages {
     private static final Map<String, Entry> CACHE = new HashMap<>();
-    /** One thread: each GIF decoder is only ever touched by it, one frame at a time. */
+    /** One thread: each animation's decoder is only ever touched by it, one frame at a time. */
     private static final ExecutorService DECODER_THREAD = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r, "Menu_LD image decoder");
         thread.setDaemon(true);
@@ -33,7 +33,7 @@ public final class MenuImages {
     private MenuImages() {
     }
 
-    /** Null while a GIF still opens, or when the image could not be read (logged once). */
+    /** Null while an animation still opens, or when the image could not be read (logged once). */
     @Nullable
     public static MenuImage get(String ref, boolean smooth) {
         String key = smooth ? ref + "#smooth" : ref;
@@ -41,7 +41,7 @@ public final class MenuImages {
         if (entry == null) {
             entry = new Entry();
             CACHE.put(key, entry);
-            entry.pending = isGif(ref)
+            entry.pending = isAnimation(ref)
                     ? CompletableFuture.supplyAsync(() -> decode(ref), DECODER_THREAD)
                     : decodeNow(ref);
         }
@@ -75,6 +75,14 @@ public final class MenuImages {
         return ref.toLowerCase(Locale.ROOT).endsWith(".gif");
     }
 
+    private static boolean isArchive(String ref) {
+        return ref.toLowerCase(Locale.ROOT).endsWith(".zip");
+    }
+
+    private static boolean isAnimation(String ref) {
+        return isGif(ref) || isArchive(ref);
+    }
+
     private static CompletableFuture<DecodedImage> decodeNow(String ref) {
         try {
             return CompletableFuture.completedFuture(decode(ref));
@@ -84,6 +92,7 @@ public final class MenuImages {
     }
 
     private static DecodedImage decode(String ref) {
+        if (isArchive(ref)) return decodeArchive(ref);
         try (InputStream in = new BufferedInputStream(Assets.open(ref))) {
             if (!isGif(ref)) return new DecodedImage(NativeImage.read(in), null);
             GifDecoder decoder = new GifDecoder(in.readAllBytes());
@@ -91,6 +100,21 @@ public final class MenuImages {
                 return new DecodedImage(decoder.decodeNext(), decoder);
             } catch (IOException | RuntimeException e) {
                 decoder.close();
+                throw e;
+            }
+        } catch (IOException | RuntimeException e) {
+            throw new CompletionException(e);
+        }
+    }
+
+    private static DecodedImage decodeArchive(String ref) {
+        try {
+            if (Assets.isResource(ref)) throw new IOException("frame archives must be files in config/menu_ld/");
+            FrameArchive archive = new FrameArchive(Assets.file(ref));
+            try {
+                return new DecodedImage(archive.decodeNext(), archive);
+            } catch (IOException | RuntimeException e) {
+                archive.close();
                 throw e;
             }
         } catch (IOException | RuntimeException e) {

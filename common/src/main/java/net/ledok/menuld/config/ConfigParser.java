@@ -75,7 +75,7 @@ final class ConfigParser {
             }
         }
         if (!found) o.problem("unknown sound source '" + sourceName + "'");
-        Audio a = new Audio(sound, source, o.number("volume", 1f), o.bool("loop", true));
+        Audio a = new Audio(sound, source, o.number("volume", 1f), o.bool("loop", true), o.bool("title_only", false));
         o.finish();
         return a;
     }

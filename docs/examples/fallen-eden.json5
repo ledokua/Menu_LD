@@ -1,21 +1,23 @@
 // Fallen Eden main menu, converted from the FancyMenu layout "fallenedenv5_light" (2026-10-04).
 // Install as config/menu_ld/menu.json5, with the art in config/menu_ld/fallen_eden/:
-//   background_night.gif foon.png minecraft2.png minecraft_title.png black_button.png button_light.png
-//   button_light_1.png button_green.png button_exit.png gift1.png gift_012.png coind.png coin_056.png
-//   gem_01j.png gem_02j.png crystal_01j.png crystal_02j.png
+//   background_night.zip (213 JPEG frames, 1920×1080, 15 fps) foon.png minecraft2.png minecraft_title.png
+//   black_button.png button_light.png button_light_1.png button_green.png button_exit.png gift1.png
+//   gift_012.png coind.png coin_056.png gem_01j.png gem_02j.png crystal_01j.png crystal_02j.png
 //   menu_music.ogg (418.wav), rain.ogg (heavy rain wav), thunder.ogg (thunder-single-long-strike.wav),
 //   converted with: ffmpeg -i in.wav -c:a libvorbis -q:a 4 out.ogg
 // Saved changes apply the next time the title screen opens.
 {
+  // 1080p JPEG frames (see README "Frame archives"); also shown behind Options, the server list and other menus.
   "background": {
-    "image": "fallen_eden/background_night.gif",
+    "image": "fallen_eden/background_night.zip",
     "fit": "stretch",
-    "smooth": true
+    "smooth": true,
+    "all_menus": true
   },
 
   "audio": [
     { "sound": "fallen_eden/menu_music.ogg", "source": "music", "loop": true, "volume": 0.4 },
-    { "sound": "fallen_eden/rain.ogg", "source": "ambient", "loop": true, "volume": 0.2 }
+    { "sound": "fallen_eden/rain.ogg", "source": "ambient", "loop": true, "volume": 0.2, "title_only": true }
   ],
 
   "title_screen": {
@@ -90,7 +92,7 @@
 
   "loading_screen": {
     "color": "#070B1E",
-    "background": { "image": "fallen_eden/background_night.gif", "fit": "cover", "smooth": true },
+    "background": { "image": "fallen_eden/background_night.zip", "fit": "cover", "smooth": true },
     "mojang_logo": false,
     "elements": [
       { "type": "image", "image": "fallen_eden/minecraft2.png",

@@ -23,7 +23,8 @@ public record MenuConfig(Background background, List<Audio> audio, Title title, 
         }
     }
 
-    public record Audio(String sound, SoundSource source, float volume, boolean loop) {
+    /** {@code titleOnly}: muted while another menu (Options, server list...) covers the title screen. */
+    public record Audio(String sound, SoundSource source, float volume, boolean loop, boolean titleOnly) {
     }
 
     /** Width/height below 0 keep the widget's own size; stretch fills that screen axis. */

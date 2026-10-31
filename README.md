@@ -80,11 +80,11 @@ makes the menu cascade in.
 
 | Key | Default | What |
 |---|---|---|
-| `image` | — | PNG or GIF ([Assets](#assets)) |
+| `image` | — | PNG, GIF or frame archive ([Assets](#assets)) |
 | `color` | none | Solid fill under the image (or instead of it) |
 | `fit` | `stretch` | `stretch` (fill, ignore aspect ratio), `cover` (fill, crop), `contain` (whole image, letterboxed) |
 | `smooth` | `true` | Linear filtering when scaled; `false` keeps pixel art crisp |
-| `all_menus` | `false` | Also replace the panorama behind other menus outside a world (Options, server list, connecting…) |
+| `all_menus` | `false` | Also replace the panorama behind other menus outside a world (Options, server list, connecting…). Only the image: effects and elements stay on the title screen |
 
 ## Title screen
 
@@ -200,9 +200,10 @@ the whole screen whatever the layer.
 | `source` | `music` | Volume slider it follows: `master`, `music`, `record`, `weather`, `block`, `hostile`, `neutral`, `player`, `ambient`, `voice` |
 | `volume` | `1` | |
 | `loop` | `true` | |
+| `title_only` | `false` | Muted (fades out) while another menu such as Options or the server list is open, back on return — for ambience like rain that belongs to the title screen's effects |
 
-Tracks start when the title screen first opens, keep playing through Options and the other menus, and
-stop when you join a world. While any track uses `music`, vanilla's menu music stays silent. Only Ogg
+Tracks start when the title screen first opens, keep playing through Options and the other menus
+(`title_only` ones silently), and stop when you join a world. While any track uses `music`, vanilla's menu music stays silent. Only Ogg
 Vorbis plays — convert other formats once, e.g. `ffmpeg -i music.wav -c:a libvorbis -q:a 4 music.ogg`.
 
 ## Loading screen
@@ -248,7 +249,33 @@ Wherever text goes (`label`, `tooltip`, `text`):
 |---|---|
 | PNG | Loaded when first shown |
 | GIF | Animated. Streamed: only the file, one decoded frame and one texture stay in memory (a 9 MB, 213-frame 426×240 GIF uses ~10 MB, opens in a fraction of a second on a worker thread). Keep backgrounds small — 426×240 with `smooth` looks fine full-screen |
+| ZIP | Frame archive: an animation as JPEG (or PNG) frames, see below. The better choice for full-screen footage |
 | OGG | Audio, streamed from disk |
+
+### Frame archives
+
+GIFs only have 256 colors and compress footage where the whole picture moves very badly (a 14-second
+1080p clip: 110 MB as a GIF, 12 MB as JPEG frames). A frame archive is a `.zip` of frames played in
+file-name order, plus an optional `animation.json` with the speed (default 15 fps):
+
+```json
+{ "fps": 15 }
+```
+
+The archive stays on disk; the worker thread reads and decodes one frame ahead (natively, with the same
+decoder Minecraft uses for PNGs), so memory holds one texture plus one decoded frame — 16 MB at 1080p,
+whatever the frame count. All frames must have the same size. Zero-pad the numbers so names sort right.
+Archives must be files under `config/menu_ld/`, not resource-pack ids. Making one from a GIF or video:
+
+```bash
+mkdir frames && ffmpeg -i background.gif -q:v 4 frames/%04d.jpg
+echo '{ "fps": 15 }' > frames/animation.json
+cd frames && zip -0 ../background.zip animation.json *.jpg
+```
+
+`-q:v` is the JPEG quality (2 = best, 31 = worst; 3–5 is a good range). `zip -0` stores without
+recompressing — JPEGs don't shrink further and stored frames read faster. Use the source's frame rate
+(`ffprobe background.gif` shows it as `r_frame_rate`).
 
 A path like `my_pack/bg.gif` means `config/menu_ld/my_pack/bg.gif` (it cannot leave that folder).
 `namespace:path` reads from resource packs instead (`minecraft:textures/gui/title/background/panorama_0.png`),
@@ -286,7 +313,7 @@ other than the title screen.
 - **Red line on the title screen** — the config has problems; `"debug": true` lists them, the log has all.
 - **A button is not affected** — turn on `debug` and use the id it shows.
 - **No sound** — only `.ogg` plays; check the volume slider of the track's `source`.
-- **Background black for a moment** — a GIF is still opening; a `color` fill shows meanwhile.
+- **Background black for a moment** — a GIF or frame archive is still opening; a `color` fill shows meanwhile.
 - **Logo and buttons overlap on some screens** — positions are GUI pixels, and the GUI height varies with
   window size and GUI scale. Keep things that must not touch on the *same* anchor: a logo on `top` and
   buttons on `center` slide into each other on short screens. Minecraft's automatic GUI scale never goes
