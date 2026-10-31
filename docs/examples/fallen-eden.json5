@@ -51,7 +51,7 @@
     "elements": [
       // Dark column behind the logo and buttons. Logo and buttons are one centered block (fits 240 GUI px tall).
       { "type": "image", "image": "fallen_eden/foon.png",
-        "anchor": "top", "x": -107, "y": 10, "width": 214, "height": 348, "opacity": 0.3 },
+        "anchor": "top", "x": -107, "y": 0, "width": 214, "stretch_y": true, "opacity": 0.3 },
       { "type": "image", "image": "fallen_eden/minecraft2.png",
         "anchor": "center", "x": -50, "y": -94, "width": 100, "height": 49, "fade_in": 1.2 },
       { "type": "image", "image": "fallen_eden/minecraft_title.png",
