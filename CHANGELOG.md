@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.3.0
+
+- **Frame archives**: a `.zip` of JPEG/PNG frames (+ optional `animation.json` with `fps`) works anywhere a
+  GIF does. Full color and far smaller for full-screen footage (Fallen Eden's 1080p background: 110 MB GIF →
+  12 MB archive); frames stream from disk and decode natively one ahead, so memory stays at one frame.
+- Audio tracks get `title_only`: muted while Options, the server list or another menu covers the title
+  screen, faded back in on return (the loop keeps its place). Menu thunder is always title-only.
+
 ## 0.2.0
 
 - **Minecraft 26.1.2 (NeoForge)** build (this branch; 1.21.1 lives on the `1.21.1` branch) — same config

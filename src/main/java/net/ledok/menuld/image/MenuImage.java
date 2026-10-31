@@ -28,7 +28,7 @@ public final class MenuImage {
     private final int width;
     private final int height;
     @Nullable
-    private final GifDecoder animation;
+    private final FrameSource animation;
     private final Executor decoderThread;
     @Nullable
     private CompletableFuture<NativeImage> nextFrame;
@@ -71,7 +71,7 @@ public final class MenuImage {
             texture.write(nextFrame.join());
         } catch (CompletionException e) {
             broken = true;
-            MenuLd.LOGGER.warn("GIF animation stopped: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+            MenuLd.LOGGER.warn("Animation stopped: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
             return;
         }
         shownFrame = (shownFrame + 1) % animation.frameCount();
@@ -81,7 +81,7 @@ public final class MenuImage {
     }
 
     private void requestNextFrame() {
-        GifDecoder decoder = animation;
+        FrameSource decoder = animation;
         nextFrame = CompletableFuture.supplyAsync(() -> {
             try {
                 return decoder.decodeNext();

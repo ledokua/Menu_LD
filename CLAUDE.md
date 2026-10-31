@@ -40,9 +40,11 @@ licensed: never copy or port its code, only its users' layout data.
   `visible = false`, never removed.
 - Realms notifications are hidden by never constructing `RealmsNotificationsScreen` (`NEW` wrap in
   `TitleScreenMixin.init`).
-- Images: `MenuImages` cache → `MenuImage` = one GPU texture per image. GIFs stream through `GifDecoder` on
-  the single "Menu_LD image decoder" thread (one frame ahead). The owner asked to keep RAM and load time low
-  — no full-GIF predecoding.
+- Images: `MenuImages` cache → `MenuImage` = one GPU texture per image. Animations are a `FrameSource`:
+  `GifDecoder` or `FrameArchive` (`.zip` of JPEG/PNG frames, decoded with STB and wrapped with
+  the public pointer constructor because `NativeImage.read` rejects non-PNGs; 1.21.1 needs an invoker). They
+  stream on the single "Menu_LD image decoder" thread (one frame ahead). The owner asked to keep RAM and
+  load time low — no full-GIF predecoding.
 - Audio: `.ogg` files stream from config through made-up `menu_ld:audio/<n>` ids that
   `SoundBufferLibraryMixin.getStream` resolves; `MusicManagerMixin` silences vanilla menu music while a
   `music` track is configured.
